@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSort AI - Smart Segregation & Policy RAG Assistant</title>
+  <!-- Google Fonts: Outfit and Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-mode">
+  <!-- Main Grid Container -->
+  <div class="app-container">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-logo">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 17L12 22L22 17" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M2 12L12 17L22 12" stroke="url(#logo-grad)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="logo-grad" x1="2" y1="2" x2="22" y2="22" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#10B981"/>
+                <stop offset="1" stop-color="#06B6D4"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="brand-name">EcoSort <span class="highlight">AI</span></span>
+      </div>
+
+      <nav class="nav-menu">
+        <button class="nav-item active" data-tab="dashboard">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+          <span>Dashboard</span>
+        </button>
+        <button class="nav-item" data-tab="scanner">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+          <span>AI Waste Scanner</span>
+        </button>
+        <button class="nav-item" data-tab="rag-chat">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+          <span>Policy RAG Chat</span>
+        </button>
+        
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="system-status">
+          <span class="status-dot online"></span>
+          <span>Granite-3.0-Instruct (Local)</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      
+      <!-- Top header bar -->
+      <header class="header">
+        <div class="header-search">
+          <span class="welcome-user">Hello, Intern</span>
+        </div>
+        <div class="header-actions">
+          <button class="btn-theme-toggle" id="theme-toggle">
+            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path></svg>
+          </button>
+          <div class="profile-avatar">
+            <span>IS</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- TAB 1: DASHBOARD VIEW -->
+      <section id="dashboard" class="tab-content active">
+        <div class="welcome-banner">
+          <div class="banner-text">
+            <h1>AI for Sustainability Dashboard</h1>
+            <p>Every small action counts. Using artificial intelligence to optimize waste segregation, reduce contamination, and bridge municipal policy awareness gaps.</p>
+          </div>
+          <div class="banner-badge">
+            <span class="badge-label">Active Internship Goal</span>
+            <span class="badge-title">SDG 12 & 11</span>
+          </div>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon glass-green">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M23 4v6h-6M1 20v-6h6"></path><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value" id="stat-total-scans">18</span>
+              <span class="stat-label">Total Items Segregated</span>
+            </div>
+          </div>
+          
+          <div class="stat-card">
+            <div class="stat-icon glass-cyan">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value" id="stat-carbon">14.6 kg</span>
+              <span class="stat-label">CO₂ Displace Offset</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon glass-amber">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value" id="stat-recycling-rate">83.3%</span>
+              <span class="stat-label">Recyclables Diverted</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon glass-red">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <div class="stat-details">
+              <span class="stat-value" id="stat-points">360</span>
+              <span class="stat-label">EcoScore Points Earned</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dashboard Analytics Grid -->
+        <div class="dashboard-grid">
+          <!-- Carbon Saved Over Time (Visual SVG graph) -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <h2>CO₂ Offset Analytics (Weekly)</h2>
+              <span class="trend positive">+12% this week</span>
+            </div>
+            <div class="card-body">
+              <div class="svg-chart-container">
+                <!-- SVG Chart Mockup -->
+                <svg width="100%" height="200" viewBox="0 0 500 200" preserveAspectRatio="none" class="main-svg-chart">
+                  <defs>
+                    <linearGradient id="chart-grad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#10B981" stop-opacity="0.4"/>
+                      <stop offset="100%" stop-color="#10B981" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+                  <!-- Grid Lines -->
+                  <line x1="0" y1="50" x2="500" y2="50" stroke="var(--border-color)" stroke-dasharray="5,5" />
+                  <line x1="0" y1="100" x2="500" y2="100" stroke="var(--border-color)" stroke-dasharray="5,5" />
+                  <line x1="0" y1="150" x2="500" y2="150" stroke="var(--border-color)" stroke-dasharray="5,5" />
+                  
+                  <!-- Area Fill -->
+                  <path d="M 0 180 Q 80 150 160 120 T 320 80 T 480 40 L 480 200 L 0 200 Z" fill="url(#chart-grad)" />
+                  <!-- Line -->
+                  <path d="M 0 180 Q 80 150 160 120 T 320 80 T 480 40" fill="none" stroke="#10B981" stroke-width="3" />
+                  
+                  <!-- Data Dots -->
+                  <circle cx="0" cy="180" r="5" fill="#10B981" />
+                  <circle cx="100" cy="142" r="5" fill="#10B981" />
+                  <circle cx="200" cy="110" r="5" fill="#10B981" />
+                  <circle cx="300" cy="85" r="5" fill="#10B981" />
+                  <circle cx="400" cy="60" r="5" fill="#10B981" />
+                  <circle cx="480" cy="40" r="5" fill="#10B981" />
+                </svg>
+                <div class="chart-labels">
+                  <span>Mon</span>
+                  <span>Tue</span>
+                  <span>Wed</span>
+                  <span>Thu</span>
+                  <span>Fri</span>
+                  <span>Sat</span>
+                  <span>Sun</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card list-card">
+            <div class="card-header">
+              <h2>Recent Scanned Items</h2>
+              <button class="btn-clear-history" id="clear-history">Clear</button>
+            </div>
+            <div class="card-body">
+              <ul class="activity-list" id="activity-log">
+                <!-- Dynamically populated -->
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 2: AI WASTE SCANNER VIEW -->
+      <section id="scanner" class="tab-content">
+        <div class="view-intro">
+          <h2>AI Waste Segregation Guide</h2>
+          <p>Scan a waste item or select a common model sample below. EcoSort uses computer vision to identify the item, extract its material details, and output clean recycling instructions.</p>
+        </div>
+
+        <div class="scanner-layout">
+          <!-- Left side: Interaction Area -->
+          <div class="card scanner-interaction">
+            <div class="scanner-tabs">
+              <button class="scan-mode-btn active" data-mode="samples">Sample Items</button>
+              <button class="scan-mode-btn" data-mode="upload">Upload Image</button>
+              <button class="scan-mode-btn" data-mode="camera">Live Camera</button>
+            </div>
+
+            <!-- Upload Panel -->
+            <div class="scan-panel" id="panel-upload" style="display: none;">
+              <div class="drop-zone" id="drop-zone">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="drop-icon"><polyline points="16 16 12 12 8 16"></polyline><line x1="12" y1="12" x2="12" y2="21"></line><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3"></path><polyline points="16 16 12 12 8 16"></polyline></svg>
+                <p class="drop-main-text">Drag & drop your trash image here</p>
+                <p class="drop-sub-text">or click to browse from files</p>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+              </div>
+            </div>
+
+            <!-- Camera Panel -->
+            <div class="scan-panel" id="panel-camera" style="display: none;">
+              <div class="camera-stream-wrapper">
+                <div class="camera-mock-overlay">
+                  <div class="viewfinder"></div>
+                  <span class="camera-text">Camera Sandbox Mode</span>
+                </div>
+                <div class="camera-placeholder">
+                  <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                  <p>Click start to simulate device camera access</p>
+                  <button class="btn btn-primary" id="btn-start-camera">Enable Simulator</button>
+                </div>
+                <video id="webcam" autoplay playsinline style="display: none;"></video>
+                <div class="camera-controls" style="display: none;">
+                  <button class="btn btn-capture" id="btn-capture">Capture & Classify</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Samples Panel -->
+            <div class="scan-panel active" id="panel-samples">
+              <p class="panel-subtitle">Select any household item below to simulate real-time AI scanning:</p>
+              <div class="samples-grid">
+                <button class="sample-item-card" data-item="pizza-box">
+                  <span class="sample-icon">🍕</span>
+                  <span class="sample-name">Greasy Pizza Box</span>
+                  <span class="sample-category">Paper / Food</span>
+                </button>
+                <button class="sample-item-card" data-item="milk-bottle">
+                  <span class="sample-icon">🍼</span>
+                  <span class="sample-name">Plastic Milk Bottle</span>
+                  <span class="sample-category">HDPE Plastic</span>
+                </button>
+                <button class="sample-item-card" data-item="charger">
+                  <span class="sample-icon">🔌</span>
+                  <span class="sample-name">Old Phone Charger</span>
+                  <span class="sample-category">E-Waste</span>
+                </button>
+                <button class="sample-item-card" data-item="soda-can">
+                  <span class="sample-icon">🥤</span>
+                  <span class="sample-name">Aluminum Soda Can</span>
+                  <span class="sample-category">Metal</span>
+                </button>
+                <button class="sample-item-card" data-item="battery">
+                  <span class="sample-icon">🔋</span>
+                  <span class="sample-name">Household AA Battery</span>
+                  <span class="sample-category">Hazardous E-Waste</span>
+                </button>
+                <button class="sample-item-card" data-item="banana-peel">
+                  <span class="sample-icon">🍌</span>
+                  <span class="sample-name">Banana Peel</span>
+                  <span class="sample-category">Organic</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side: AI Decision Engine Analysis -->
+          <div class="card scanner-results">
+            <div class="results-header">
+              <h3>AI Classification Report</h3>
+              <div class="confidence-badge" id="report-confidence">Waiting...</div>
+            </div>
+            
+            <div id="results-placeholder" class="results-placeholder">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="var(--text-muted)" stroke-width="1.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+              <p>No item scanned. Please select a sample item or upload an image to launch the classifier analysis.</p>
+            </div>
+
+            <div id="results-data" style="display: none;">
+              <!-- Main classified name -->
+              <div class="report-title-section">
+                <span class="report-emoji" id="report-emoji">📦</span>
+                <div>
+                  <h4 id="report-item-name">Greasy Pizza Box</h4>
+                  <span class="report-class" id="report-material">Mixed Materials</span>
+                </div>
+              </div>
+
+              <!-- Recommendation Banner -->
+              <div class="bin-allocation-card" id="bin-allocation-wrapper">
+                <span class="bin-color-bar" id="bin-color-indicator"></span>
+                <div class="bin-text-details">
+                  <span class="bin-label">Destination Bin</span>
+                  <span class="bin-name" id="bin-destination">MUNICIPAL COMPOST / LANDFILL</span>
+                </div>
+              </div>
+
+              <!-- Steps -->
+              <div class="report-section">
+                <h5>Required Segregation Steps:</h5>
+                <ol class="segregation-steps" id="report-steps">
+                  <!-- Dynamically inserted -->
+                </ol>
+              </div>
+
+              <!-- Hazards / Critical Info -->
+              <div class="report-section highlight-alert" id="report-alert-box">
+                <div class="alert-icon">⚠️</div>
+                <div class="alert-content">
+                  <h6 id="alert-title">Contamination Hazard</h6>
+                  <p id="alert-text">Grease from food soils paper cardboard fibers, making them unrecyclable. Placing greasy paper in paper bins contaminates other dry recyclable elements.</p>
+                </div>
+              </div>
+
+              <!-- Ecological impact of this single item -->
+              <div class="item-stats">
+                <div class="item-stat-pill">
+                  <span class="pill-label">CO₂ Saved</span>
+                  <span class="pill-value" id="report-stat-co2">+0.2 kg</span>
+                </div>
+                <div class="item-stat-pill">
+                  <span class="pill-label">Points</span>
+                  <span class="pill-value" id="report-stat-points">+20 pts</span>
+                </div>
+              </div>
+
+              <!-- Button to confirm segregation -->
+              <button class="btn btn-success btn-full" id="btn-log-action">Log Disposal & Claim Points</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- TAB 3: POLICY RAG CHAT VIEW -->
+      <section id="rag-chat" class="tab-content">
+        <div class="view-intro">
+          <h2>Municipal Policy RAG Search Assistant</h2>
+          <p>This assistant answers complex, local sustainability and waste management policy queries. It acts as a <strong>Retrieval-Augmented Generation (RAG)</strong> demonstrator using an <strong>IBM Granite Model</strong> prompt template.</p>
+        </div>
+
+        <div class="rag-layout">
+          <!-- Chat Panel -->
+          <div class="card chat-card-container">
+            <div class="chat-header">
+              <div class="assistant-profile">
+                <div class="assistant-avatar">🤖</div>
+                <div>
+                  <h4>Granite Policy RAG Agent</h4>
+                  <span class="sub-text">Connected to Municipal Waste Guidelines v2026</span>
+                </div>
+              </div>
+              <div class="city-selector-wrapper">
+                <label for="city-select">Select Jurisdiction:</label>
+                <select id="city-select" class="city-selector">
+                  <option value="national">National Solid Waste Rules (India)</option>
+                  <option value="mumbai">Mumbai Municipal Corporation (MCGM)</option>
+                  <option value="bangalore">Bruhat Bengaluru Mahanagara Palike (BBMP)</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Messages Window -->
+            <div class="chat-messages" id="chat-messages">
+              <div class="msg system">
+                <p>Hello! I am your AI Waste Policy Advisor. Ask me anything about waste sorting guidelines, hazardous items, or recycling policies. I will cross-reference our local database to give you an accurate, citation-backed response.</p>
+              </div>
+            </div>
+
+            <!-- Suggestion chips -->
+            <div class="suggestions-chips-row">
+              <button class="chip-query">How to dispose of old fluorescent bulbs?</button>
+              <button class="chip-query">Are biodegradable bags compostable?</button>
+              <button class="chip-query">Fines for wet & dry waste mixing?</button>
+            </div>
+
+            <!-- Chat Input form -->
+            <form class="chat-input-row" id="chat-form">
+              <input type="text" id="chat-input" placeholder="Type your query (e.g. 'Can I recycle paint cans?')..." autocomplete="off">
+              <button type="submit" class="btn btn-primary btn-send">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </form>
+          </div>
+
+          <!-- RAG Pipeline Trace Inspector (Responsible AI & transparency) -->
+          <div class="card rag-inspector">
+            <div class="inspector-header">
+              <h3>RAG Pipeline Inspector</h3>
+              <span class="badge-tech">Transparency Trace</span>
+            </div>
+            
+            <div class="inspector-body">
+              <p class="inspector-description">Responsible AI requires transparency. See exactly how the RAG model retrieves document chunks and constructs prompts for the IBM Granite model in real time.</p>
+
+              <!-- Step 1: Query & Chunk retrieval -->
+              <div class="trace-step disabled" id="trace-step-retrieval">
+                <div class="trace-title">
+                  <span class="trace-number">1</span>
+                  <h4>Vector Document Retrieval</h4>
+                </div>
+                <div class="trace-content">
+                  <p class="meta">Simulated Vector Search (Cosine Similarity Match)</p>
+                  <div class="retrieved-chunks-list" id="trace-chunks">
+                    <div class="empty-trace-placeholder">Send a message to see RAG document retrieval chunks.</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Step 2: Prompt assembly -->
+              <div class="trace-step disabled" id="trace-step-prompt">
+                <div class="trace-title">
+                  <span class="trace-number">2</span>
+                  <h4>IBM Granite Prompt Assembly</h4>
+                </div>
+                <div class="trace-content">
+                  <p class="meta">Assembled LLM prompt including rules & retrieved contexts:</p>
+                  <div class="code-block-wrapper">
+                    <pre><code id="trace-assembled-prompt">Waiting for user query...</code></pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      
+
+    </main>
+  </div>
+
+  <!-- JS Scripts -->
+  <script src="app.js"></script>
+</body>
+</html>

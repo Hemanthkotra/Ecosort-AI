@@ -158,6 +158,13 @@ document.addEventListener('DOMContentLoaded', () => {
       source: 'Smart Cities Recycling Guidelines',
       text: 'Clause 4.1: Cardboard, paper cartons, and packages coated in food oils, dairy residue, pizza grease, or heavy wax are unfit for cardboard paper mills. They must be categorized as organic compostable (if purely paper/oil) or regular landfill waste. Dry paper, newspaper, and boxes must be flattened and kept dry to preserve fiber length.',
       keywords: ['pizza', 'cardboard', 'paper', 'grease', 'oil', 'box', 'contamination', 'wash', 'rinse']
+    },
+    {
+      id: 'doc5',
+      title: 'Metal Recycling Directives & Cans Segregation',
+      source: 'National Clean City Directives',
+      text: 'Rule 14.2: Metal containers, including aluminum soda cans, tin packaging, steel cans, and metallic aerosols, are 100% recyclable. They must be rinsed clean of food residues and placed directly in dry recyclable bins. Recycling metals saves up to 95% of virgin manufacturing energy.',
+      keywords: ['can', 'cans', 'steel', 'metal', 'aluminum', 'recycle', 'recycling', 'iron', 'soda', 'tin', 'packaging']
     }
   ];
 
@@ -313,7 +320,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Display values in UI
     repConfidence.textContent = `${item.confidence.toFixed(1)}% match`;
-    repEmoji.textContent = item.emoji;
+    
+    // Set custom image or emoji
+    if (appState.uploadedImgSrc && appState.currentScanMode !== 'samples') {
+      repEmoji.innerHTML = `<img src="${appState.uploadedImgSrc}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" />`;
+    } else {
+      repEmoji.textContent = item.emoji;
+    }
+    
     repItemName.textContent = item.name;
     repMaterial.textContent = item.material;
     
@@ -414,14 +428,25 @@ document.addEventListener('DOMContentLoaded', () => {
   dropZone.addEventListener('drop', (e) => {
     e.preventDefault();
     dropZone.classList.remove('dragover');
-    simulateFileAnalysis();
+    if (e.dataTransfer.files.length > 0) {
+      processSelectedFile(e.dataTransfer.files[0]);
+    }
   });
 
   fileInput.addEventListener('change', () => {
     if (fileInput.files.length > 0) {
-      simulateFileAnalysis();
+      processSelectedFile(fileInput.files[0]);
     }
   });
+
+  function processSelectedFile(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      appState.uploadedImgSrc = e.target.result;
+      simulateFileAnalysis();
+    };
+    reader.readAsDataURL(file);
+  }
 
   function simulateFileAnalysis() {
     resultsPlaceholder.style.display = 'flex';
@@ -441,22 +466,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1500);
   }
 
-  // Webcam Simulator
+  // Webcam Simulator & Real Camera Streamer
   const btnStartCam = document.getElementById('btn-start-camera');
   const camPlaceholder = document.querySelector('.camera-placeholder');
   const camControls = document.querySelector('.camera-controls');
   const cameraText = document.querySelector('.camera-text');
+  const webcamVideo = document.getElementById('webcam');
 
-  btnStartCam.addEventListener('click', () => {
+  btnStartCam.addEventListener('click', async () => {
     camPlaceholder.style.display = 'none';
+    webcamVideo.style.display = 'block';
     camControls.style.display = 'flex';
-    
-    // Simulate streaming
-    const wrapper = document.querySelector('.camera-stream-wrapper');
-    wrapper.style.backgroundColor = '#1e293b';
-    wrapper.style.backgroundImage = 'radial-gradient(circle, #334155 10%, transparent 80%)';
-    cameraText.textContent = 'Camera Streaming ACTIVE';
-    cameraText.style.color = '#10B981';
+    cameraText.textContent = 'Camera: Accessing Device...';
+    cameraText.style.color = '#F59E0B';
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: 'environment' } 
+      });
+      webcamVideo.srcObject = stream;
+      cameraText.textContent = 'Camera: Live Feed Active';
+      cameraText.style.color = '#10B981';
+      appState.activeStream = stream; // store reference
+    } catch (err) {
+      console.error("Camera access failed, falling back to simulator: ", err);
+      webcamVideo.style.display = 'none';
+      
+      const wrapper = document.querySelector('.camera-stream-wrapper');
+      wrapper.style.backgroundColor = '#1e293b';
+      wrapper.style.backgroundImage = 'radial-gradient(circle, #334155 10%, transparent 80%)';
+      cameraText.textContent = 'Camera: Simulator Mode';
+      cameraText.style.color = '#F59E0B';
+    }
   });
 
   document.getElementById('btn-capture').addEventListener('click', () => {
@@ -464,16 +505,43 @@ document.addEventListener('DOMContentLoaded', () => {
     resultsPlaceholder.innerHTML = `
       <div class="loader-container">
         <div class="spinner"></div>
-        <p style="margin-top: 12px;">Computer Vision Frame Captured...</p>
+        <p style="margin-top: 12px;">Capturing Video Frame...</p>
       </div>
     `;
     resultsData.style.display = 'none';
+
+    // If real camera is active, grab the frame
+    if (appState.activeStream && webcamVideo.srcObject) {
+      try {
+        const canvas = document.createElement('canvas');
+        canvas.width = webcamVideo.videoWidth || 640;
+        canvas.height = webcamVideo.videoHeight || 480;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(webcamVideo, 0, 0, canvas.width, canvas.height);
+        appState.uploadedImgSrc = canvas.toDataURL('image/jpeg');
+      } catch (e) {
+        console.error("Canvas capture failed: ", e);
+      }
+    } else {
+      appState.uploadedImgSrc = null; // reset for simulation
+    }
 
     setTimeout(() => {
       // Pick metal can or batteries as capturing examples
       const options = ['soda-can', 'battery', 'charger'];
       const pick = options[Math.floor(Math.random() * options.length)];
       analyzeItem(pick);
+      
+      // Stop the camera stream to release device resources
+      if (appState.activeStream) {
+        appState.activeStream.getTracks().forEach(track => track.stop());
+        appState.activeStream = null;
+        webcamVideo.style.display = 'none';
+        camPlaceholder.style.display = 'flex';
+        camControls.style.display = 'none';
+        cameraText.textContent = 'Camera Sandbox Mode';
+        cameraText.style.color = 'rgba(255, 255, 255, 0.6)';
+      }
     }, 1200);
   });
 

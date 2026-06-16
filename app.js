@@ -482,7 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } 
+        video: { facingMode: { ideal: 'environment' } } 
       });
       webcamVideo.srcObject = stream;
       cameraText.textContent = 'Camera: Live Feed Active';

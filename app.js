@@ -294,12 +294,19 @@ document.addEventListener('DOMContentLoaded', () => {
       btn.classList.add('active');
       
       const mode = btn.getAttribute('data-mode');
-      scanPanels.forEach(panel => {
-        panel.classList.remove('active');
-        if (panel.id === `panel-${mode}`) {
-          panel.classList.add('active');
-        }
-      });
+     scanPanels.forEach(panel => {
+
+    panel.classList.remove('active');
+    panel.style.display = 'none';
+
+    if (panel.id === `panel-${mode}`) {
+
+        panel.classList.add('active');
+        panel.style.display = 'block';
+
+    }
+
+});
       appState.currentScanMode = mode;
     });
   });
